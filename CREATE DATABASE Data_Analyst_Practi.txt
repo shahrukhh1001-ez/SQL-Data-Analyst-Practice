@@ -1,0 +1,243 @@
+CREATE DATABASE Data_Analyst_Practice;
+
+USE Data_Analyst_Practice;
+
+##1. Departments Table
+CREATE TABLE Departments (
+    Dept_ID INT PRIMARY KEY,
+    Department_Name VARCHAR(50),
+    Location VARCHAR(50)
+);
+
+INSERT INTO Departments VALUES
+(1, 'IT', 'Delhi'),
+(2, 'HR', 'Mumbai'),
+(3, 'Finance', 'Pune'),
+(4, 'Sales', 'Noida'),
+(5, 'Marketing', 'Delhi');
+
+
+-- 2. Employees Table
+CREATE TABLE Employees (
+    Emp_ID INT PRIMARY KEY,
+    Name VARCHAR(50),
+    Dept_ID INT,
+    Salary DECIMAL(10,2),
+    City VARCHAR(50),
+    Age INT,
+    FOREIGN KEY (Dept_ID) REFERENCES Departments(Dept_ID)
+);
+
+INSERT INTO Employees VALUES
+(101, 'Rahul', 1, 50000, 'Delhi', 25),
+(102, 'Priya', 2, 40000, 'Mumbai', 26),
+(103, 'Aman', 1, 60000, 'Pune', 28),
+(104, 'Neha', 3, 45000, 'Delhi', 27),
+(105, 'Arjun', 4, 35000, 'Noida', 24),
+(106, 'Sara', 2, 55000, 'Mumbai', 29),
+(107, 'Karan', 3, 70000, 'Pune', 31),
+(108, 'Zoya', 1, 65000, 'Noida', 26),
+(109, 'Rohit', 4, 42000, 'Delhi', 30),
+(110, 'Anjali', 5, 48000, 'Mumbai', 25),
+(111, 'Vikas', 1, 75000, 'Pune', 32),
+(112, 'Meera', 5, 52000, 'Noida', 28);
+
+
+-- 3. Projects Table
+CREATE TABLE Projects (
+    Project_ID INT PRIMARY KEY,
+    Project_Name VARCHAR(100),
+    Emp_ID INT,
+    Budget DECIMAL(12,2),
+    FOREIGN KEY (Emp_ID) REFERENCES Employees(Emp_ID)
+);
+
+INSERT INTO Projects VALUES
+(201, 'Website Development', 101, 200000),
+(202, 'Recruitment System', 102, 150000),
+(203, 'Data Analytics', 103, 300000),
+(204, 'Financial Audit', 104, 180000),
+(205, 'Sales Dashboard', 105, 120000),
+(206, 'HR Automation', 106, 250000),
+(207, 'Budget Analysis', 107, 350000),
+(208, 'Cloud Migration', 108, 400000),
+(209, 'Sales Reporting', 109, 100000),
+(210, 'Marketing Campaign', 110, 175000);
+
+
+
+##Display all columns from Employees table.
+Select *
+from employees;
+
+##Display only Name and Department columns.
+Select Department_Name
+from  Departments;
+
+##Find employees whose salary is greater than 50000.
+select *
+from employees
+where salary > 50000;
+
+
+##Find employees working in the IT department.
+select*
+from employees
+where  department ="IT";
+
+##Find employees whose salary is less than or equal to 45000.
+select *
+from employees
+where salary <= 45000;
+
+
+##Find all employees who belong to the IT department AND have a salary greater than 50000.
+
+select *
+from employees
+where Department = 'IT' AND salary > 50000;
+
+select *
+from employees
+where Department = 'IT' OR Department = 'Finance';
+
+##Find all employees who belong to departments with Dept_ID 1, 2, or 3.
+select *
+from employees
+where Dept_ID in (1,2,3);
+
+
+##Find all employees whose salary is between 40,000 and 60,000 (including both values).
+select *
+from employees
+where salary between 40000 AND 60000;
+
+##Find all employees whose names start with the letter 'A'.
+select*
+from employees
+where name like 'A%';
+
+##Find all unique cities from the Employees table.
+select distinct(Dept_ID)
+from Employees;
+
+select distinct(City)
+from Employees;
+
+##Display all employees and arrange their salaries from highest to lowest.
+select *
+from employees
+order by  salary desc ;
+
+##Find the top 5 highest-paid employees from the Employees table.
+select *
+from employees
+order by  salary desc 
+Limit 5;
+
+
+##Find the total number of employees in the Employees table.
+select count(emp_id)
+from employees;
+
+select Sum(salary)
+from employees;
+
+select avg(salary)
+from employees;
+
+select Max(salary)
+from employees;
+
+select min(salary)
+from employees;
+
+##Find the total number of employees in each department using the Employees table.
+select dept_id, count(dept_id)
+from employees
+group by dept_id;
+
+select dept_id,avg(salary)
+from employees
+group by Dept_id;
+
+
+##Find the total salary paid in each city.
+select city, sum("Salary") as total_salary
+from employees
+group by city;
+
+##Find the number of employees in each city, but display only those cities where employee count is greater than 2.
+select city, count(emp_id)
+from employees
+group by city
+Having count(emp_id) > 2;
+
+##Find departments where the average salary is greater than 50000.
+select dept_id,avg(salary)
+from employees
+group by dept_id
+having avg(salary) > 50000;
+
+
+##Find all employees whose salary is greater than the average salary of all employees.
+select *
+from employees
+where salary > (select avg(salary) from employees);
+
+##Find all employees who earn the highest salary in the company.
+select *
+from employees
+where salary = (select max(salary) 
+from employees);
+
+##Find all employees who earn more than the average salary of Department ID 1.
+select *
+from employees
+where salary > (select avg(salary)
+from employees
+where dept_id = 1);
+
+##Find all employees who work in departments where the department location is Delhi.
+select *
+from employees
+where dept_id in (select dept_id
+from departments 
+where location = "Delhi");
+
+##Find all employees who work in departments whose Department_Name is either IT or HR.
+select *
+from employees
+where dept_id in (select dept_id
+from departments
+where department_name ='IT' OR department_name = 'HR');
+
+##Find employees who work in departments where the total salary is greater than ₹100,000.
+select *
+from employees 
+where dept_id in (select dept_id
+from employees
+group by dept_id
+Having sum(salary) > 100000);
+
+##Find employees who belong to departments having more than 2 employees.
+Select *
+from employees
+where dept_id in (select dept_id
+from employees
+group by dept_id
+having count(emp_id) > 2);
+
+##Find all employees whose salary is equal to the lowest salary in the company.
+Select *
+from employees
+where salary = (select min(salary)
+from employees);
+
+##Find employees whose salary is greater than the average salary of their own department.
+Select *
+from employees
+where salary >  (select dept_id
+from employees
+group by dept_id
+having avg(salary));
